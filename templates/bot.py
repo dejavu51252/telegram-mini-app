@@ -10,12 +10,12 @@ from telegram.ext import (
     ContextTypes,
 )
 
-# --- 1. ВЕБ-СЕРВЕР (FLASK) ДЛЯ MINI APP И 24/7 ---
+# --- 1. ВЕБ-СЕРВЕР (FLASK) ДЛЯ RENDER И 24/7 ---
 web_app = Flask(__name__)
 
 @web_app.route('/')
 def index():
-    # Отправляет пользователю HTML-файл из папки templates
+    # Отправляет HTML-файл из папки templates (Telegram Mini App)
     return render_template('index.html')
 
 @web_app.route('/submit', methods=['POST'])
@@ -55,7 +55,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 TOKEN = os.environ.get("BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Ссылка на твой сайт на Render (автоматически берется из переменной окружения WEB_APP_URL)
+    # Ссылка на твой сайт на Render (автоматически подтянется из переменной окружения WEB_APP_URL)
     web_app_url = os.environ.get("WEB_APP_URL", "https://tvoj-proekt.onrender.com")
     
     keyboard = [
@@ -64,13 +64,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     await update.message.reply_text(
-        "Привет! Нажми на кнопку ниже, чтобы открыть каталог услуг в удобном Telegram Mini App:",
+        "Привет! Нажми на кнопку ниже, чтобы открыть каталог услуг в Telegram Mini App:",
         reply_markup=reply_markup
     )
 
 # --- 3. ЗАПУСК ---
 if __name__ == '__main__':
-    keep_alive()  # Запускаем Flask-сервер в фоновом режиме
+    keep_alive()  # Запускаем Flask-сервер в фоновом потоке для Render
     
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
